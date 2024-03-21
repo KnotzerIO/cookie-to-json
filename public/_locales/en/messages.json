@@ -20,10 +20,10 @@
   "error_message": {
     "message": "An error occurred"
   },
-  "cookies_exported": {
-    "message": "Cookies exported as File"
+  "cookies_downloaded": {
+    "message": "Cookies downloaded as File"
   },
-  "cookie_copied": {
+  "cookies_copied": {
     "message": "Cookies copied to clipboard"
   }
 }
