@@ -1,80 +1,59 @@
-/* global chrome, Blob */
-document.querySelector(".message").textContent =
-  chrome.i18n.getMessage("important_message");
+// Assume global scope has chrome, Blob
+(function () {
+  const messageElement = document.querySelector(".message");
+  const contentElement = document.querySelector("#content");
+  const loadingElement = document.querySelector(".loading");
 
-chrome.runtime.sendMessage("getCookies", (res) => {
-  const { domain, cookies } = res;
-  const $content = document.querySelector("#content");
-  let $result = null;
-  if (!cookies || cookies.length === 0) {
-    $result = document.createElement("span");
-    $result.textContent = chrome.i18n.getMessage("no_cookies");
-  } else {
-    $result = document.createElement("button");
-    $result.textContent = chrome.i18n.getMessage("download_json");
-    const downloadLink = document.createElement("a");
+  // Update message with important message
+  messageElement.textContent = chrome.i18n.getMessage("important_message");
 
-    downloadLink.setAttribute("download", `${domain}.cookies.json`);
-    downloadLink.setAttribute(
+  function setMessageContent(messageKey) {
+    messageElement.textContent = chrome.i18n.getMessage(messageKey);
+  }
+
+  function createDownloadButton(domain, cookies) {
+    const button = document.createElement("button");
+    button.textContent = chrome.i18n.getMessage("download_json");
+    const link = document.createElement("a");
+    link.setAttribute("download", `${domain}.cookies.json`);
+    link.setAttribute(
       "href",
       URL.createObjectURL(
         new Blob([JSON.stringify(cookies, null, 2)], { type: "text/plain" })
       )
     );
-    $result.addEventListener("click", function () {
-      document.querySelector(".message").textContent = "";
-      let i = 0;
-      const encryptionInterval = setInterval(() => {
-        document.querySelector(".message").textContent += Math.random()
-          .toString(36)
-          .substring(2, 3);
-        let breakWord = Math.floor(Math.random() * (10 - 5 + 1) + 5);
-        if (i % breakWord === 0) {
-          document.querySelector(".message").textContent += " ";
-        }
-
-        i++;
-        if (i > 105) {
-          clearInterval(encryptionInterval);
-          // After the animation, show "Cookies Saved"
-          setTimeout(() => {
-            document.querySelector(".message").textContent =
-              chrome.i18n.getMessage("cookies_exported");
-            downloadLink.click();
-          }, 500);
-        }
-      }, 20);
+    button.addEventListener("click", () => {
+      link.click();
+      setMessageContent("cookies_downloaded");
     });
+    return button;
   }
-  $content.removeChild(document.querySelector(".loading"));
-  $content.appendChild($result);
-  s;
-});
-/*
-    const copyButton = document.createElement("button");
-        const copyLink = document.createElement("a");
-    copyLink.setAttribute("href", "javascript:void(0)");
-    copyButton.textContent = chrome.i18n.getMessage("copy_to_clipboard");
-    copyButton.addEventListener("click", function () {
-      const encryptionInterval = setInterval(() => {
-        document.querySelector(".message").textContent += Math.random()
-          .toString(36)
-          .substring(2, 3);
-        let breakWord = Math.floor(Math.random() * (10 - 5 + 1) + 5);
-        if (i % breakWord === 0) {
-          document.querySelector(".message").textContent += " ";
-        }
 
-        i++;
-        if (i > 105) {
-          clearInterval(encryptionInterval);
-          // After the animation, show "Cookies Saved"
-          setTimeout(() => {
-            document.querySelector(".message").textContent =
-              chrome.i18n.getMessage("cookies_copied");
-            navigator.clipboard.writeText(JSON.stringify(cookies, null, 2));
-          }, 500);
-        }
-      }, 20);
+  function createCopyButton(cookies) {
+    const button = document.createElement("button");
+    button.textContent = chrome.i18n.getMessage("copy_to_clipboard");
+    button.addEventListener("click", () => {
+      navigator.clipboard
+        .writeText(JSON.stringify(cookies, null, 2))
+        .then(() => {
+          setMessageContent("cookies_copied");
+        });
     });
-*/
+    return button;
+  }
+
+  chrome.runtime.sendMessage("getCookies", (res) => {
+    const { domain, cookies } = res;
+    let resultElement = document.createElement(
+      cookies && cookies.length ? "div" : "span"
+    );
+    if (!cookies || cookies.length === 0) {
+      resultElement.textContent = chrome.i18n.getMessage("no_cookies");
+    } else {
+      resultElement.appendChild(createCopyButton(cookies));
+      resultElement.appendChild(createDownloadButton(domain, cookies));
+    }
+    contentElement.removeChild(loadingElement);
+    contentElement.appendChild(resultElement);
+  });
+})();
