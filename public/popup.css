@@ -18,8 +18,7 @@ body {
   padding: 20px;
   border-radius: 5px;
   background-color: #121212;
-  min-width: 30rem; /* Adjusted from 20rem to 30rem for additional width */
-  width: auto;
+  width: 30rem; /* Adjusted from 20rem to 30rem for additional width */
 }
 
 .loading {
