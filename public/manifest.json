@@ -1,5 +1,5 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
   "name": "Cookie Monster",
   "description": "Cookie Monster is a browser extension that allows you to export cookies to a file or save them to the clipboard",
   "version": "1.0.0",
@@ -12,16 +12,14 @@
     "256": "icon/icon_256.png"
   },
   "default_locale": "en",
-  "action": {
+  "browser_action": {
     "default_title": "Cookie Monster",
     "default_popup": "popup.html"
   },
   "background": {
-    "service_worker": "background.js"
+    "scripts": ["background.js"],
+    "persistent": false
   },
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
-  },
-  "permissions": ["tabs", "cookies"],
-  "host_permissions": ["http://*/*", "https://*/*"]
+  "content_security_policy": "script-src 'self'; object-src 'self'",
+  "permissions": ["tabs", "cookies", "http://*/*", "https://*/*"]
 }
