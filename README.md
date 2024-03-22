@@ -2,6 +2,10 @@
 
 This project is a fork of the [ktty1220/export-cookie-for-puppeteer](https://github.com/ktty1220/export-cookie-for-puppeteer) extension. It has been enhanced with an improved UI design, a new icon, and the added feature to save cookies directly to the clipboard.
 
+## Preview
+
+<img src="./resource/preview.png" width="400">
+
 ## Features
 
 - Export cookies from the current page to a JSON file
